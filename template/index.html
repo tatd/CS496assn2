@@ -1,0 +1,55 @@
+{% extends "template/base.html" %}
+{% block title %}Media Library{% endblock %}
+{% block content %}
+            <div class="page-header">
+                <h3>CS496 Assignment 2</h3>
+                <h4>Dennis Tat</h4>
+            </div>
+            <form id="item-list" class="form-horizontal" role="form" method="post" action="/">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Media Library
+                    </div>
+                    <div class="panel-body">
+                        <a href="/create" class="btn btn-lg btn-success">Add Item</a>
+                        
+                        <table class="table table-hover ">
+                            <thead>
+                                <tr>
+                                    <th><input type="submit" class="btn btn-xs btn-danger" name="delete" value="Delete"></th>
+                                    <th class="col-md-2">Title</th>
+                                    <th class="col-md-2">Type</th>
+                                    <th class="col-md-2">Release Date</th>
+                                    <th class="col-md-2">Number of Copies</th>
+                                    <th class="col-md-2">Available</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td><input type="checkbox" name="item_id" value="{{item.key().id()}}"></td>
+                                    <td>{{ item.title }}</td>
+                                    <td>{{ item.typeof }}</td>
+                                    <td>{{ item.release_date }}</td>
+                                    <td>{{ item.copies }}</td>
+                                    <td>{% if item.available == True %}Yes{% else %}No{% endif %}</td>
+                                    <!-- get numeric ID of entity key -->
+                                    <td><a href="/edit?id={{item.key().id()}}" class="btn btn-primary">Edit</a></td>
+                                </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9">No record Found</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+            <p>
+                <strong>This app validates your Google ID.</strong>
+                <strong>To add data, click Add Item.</strong>
+                <strong>To edit data, click Edit.</strong>
+                <strong>To delete data, select the rows to delete, then click Delete.</strong>
+            </p>
+{% endblock %}

@@ -1,0 +1,12 @@
+Media Library
+
+title			text
+category		radio
+release date	date
+# copies		number
+available		checkbox
+
+categories
+	film
+	music album
+	video game
