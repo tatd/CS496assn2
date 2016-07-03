@@ -24,6 +24,7 @@ class MainHandler(webapp2.RequestHandler):
         if user:
             if self.request.POST.get('delete'):
                 item_ids = self.request.get('item_id',allow_multiple=True)
+                item = Item()
                 item.delete_item(item_ids)
                 self.redirect('/')
         else:
