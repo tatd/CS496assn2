@@ -11,11 +11,11 @@
                     <a href="/" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-arrow-left"></span>  View Data</a>
                 </div>
                 <div class="panel-body">
-                    <form id="item-entry" class="form-horizontal" role="form" method="post" action="/create">
+                    <form id="item-entry" class="form-horizontal" role="form" method="post" action="/create" onsubmit="alert('Adding item. Click OK to continue.');">
                         <div class="form-group">
                             <label class="col-lg-2 control-label" for="">Title</label>
                             <div class="col-lg-4">
-                                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required autofocus />
+                                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required autofocus pattern=".*\S+.*" title="This field is required."/>
                             </div>
                         </div>
                         <div class="form-group">
@@ -97,6 +97,7 @@
                 } else {
                     // Mark it so that the next submit can be ignored
                     $form.data('submitted', true);
+
                 }
             });
 

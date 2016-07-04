@@ -14,7 +14,7 @@
                         <div class="form-group">
                             <label class="col-lg-2 control-label" for="title">Title</label>
                             <div class="col-lg-4">
-                                <input type="text" class="form-control" id="title" name="title" value="{{item.title}}" required />
+                                <input type="text" class="form-control" id="title" name="title" value="{{item.title}}" required pattern=".*\S+.*" title="This field is required."/>
                             </div>
                         </div>
                         
