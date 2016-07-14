@@ -38,19 +38,23 @@ class CreateHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
+            item = Item()
+            location = Location() 
+            template_values = {'items' : item.list_item(), 'locations' : location.list_location()}
             template = jinja_environment.get_template('template/create.html')
-            self.response.out.write(template.render())
+            self.response.out.write(template.render(template_values))
         else:
             self.redirect(users.create_login_url(self.request.uri))
     def post(self):
+
         input_title = self.request.get('title').strip()
         input_typeof = self.request.get('typeof').strip()
         input_release_date = self.request.get('release_date').strip()
-        input_copies = int(self.request.get('copies').strip())
+        input_location = self.request.get('location')
         input_available = self.request.get('available').strip() != ''
    
         item = Item()
-        item.save_item(input_title,input_typeof,input_release_date,input_copies,input_available,0)
+        item.save_item(input_title,input_typeof,input_release_date,long(input_location),input_available,0)
         self.redirect('/create')
 
 
@@ -63,7 +67,8 @@ class EditHandler(webapp2.RequestHandler):
             # get entity from key instance
             item = item_k.get()
             
-            template_values = {'item' : item}
+            location = Location()
+            template_values = {'item' : item, 'locations' : location.list_location()}
             template = jinja_environment.get_template('template/edit.html')
             self.response.out.write(template.render(template_values))
         else:
@@ -73,11 +78,11 @@ class EditHandler(webapp2.RequestHandler):
         input_title = self.request.get('title').strip()
         input_typeof = self.request.get('typeof').strip()
         input_release_date = self.request.get('release_date').strip()
-        input_copies = int(self.request.get('copies').strip())
+        input_location = self.request.get('location')
         input_available = self.request.get('available').strip() != ''
 
         item = Item()
-        item.save_item (input_title,input_typeof,input_release_date,input_copies,input_available,long(input_id))
+        item.save_item (input_title,input_typeof,input_release_date,long(input_location),input_available,long(input_id))
         self.redirect('/')
 
 class CreateLocHandler(webapp2.RequestHandler):

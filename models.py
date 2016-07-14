@@ -5,15 +5,19 @@ class ItemModel (ndb.Model):
 	title = ndb.StringProperty()
 	typeof = ndb.StringProperty()
 	release_date = ndb.DateProperty()
-	copies = ndb.IntegerProperty()
 	available = ndb.BooleanProperty()
 	user_name = ndb.StringProperty()
+	location = ndb.KeyProperty(kind='LocationModel')
+	@property
+	def item_location(self):
+		return self.location.get().name
+	
 
 class LocationModel (ndb.Model):
 	timestamp = ndb.DateTimeProperty(auto_now=True)
 	user_name = ndb.StringProperty()
-	name = ndb.StringProperty()
 	phone_number = ndb.StringProperty()
+	name = ndb.StringProperty()
 
 class LibraryModel (ndb.Model):
 	name = ndb.StringProperty()

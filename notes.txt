@@ -10,3 +10,11 @@ categories
 	film
 	music album
 	video game
+
+
+<div class="btn-group">
+                <a href="/create" class="btn btn-lg btn-success">Add Item</a>
+                <a href="/createLoc" class="btn btn-lg btn-success">Add Location</a>
+                <input type="submit" class="btn btn-xs btn-danger" name="delete" value="Delete">
+            </div>
+            <br>

@@ -20,7 +20,7 @@
                                     <th class="col-md-2">Title</th>
                                     <th class="col-md-2">Type</th>
                                     <th class="col-md-2">Release Date</th>
-                                    <th class="col-md-2">Number of Copies</th>
+                                    <th class="col-md-2">Location</th>
                                     <th class="col-md-2">Available</th>
                                 </tr>
                             </thead>
@@ -31,7 +31,7 @@
                                     <td>{{ item.title }}</td>
                                     <td>{{ item.typeof }}</td>
                                     <td>{{ item.release_date }}</td>
-                                    <td>{{ item.copies }}</td>
+                                    <td>{{ item.item_location }}</td>
                                     <td>{% if item.available == True %}Yes{% else %}No{% endif %}</td>
                                     <!-- get numeric ID of entity key -->
                                     <td><a href="/edit?id={{item.key.id()}}" class="btn btn-primary">Edit</a></td>
@@ -89,7 +89,7 @@
                 <strong>This app validates your Google ID.</strong>
             </p>
             <p> 
-                <strong>To add data, click Add Item.</strong>
+                <strong>To add data, click Add.</strong>
             </p>
             <p>
                 <strong>To edit data, click Edit.</strong>

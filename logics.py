@@ -4,7 +4,7 @@ from google.appengine.ext import ndb
 from google.appengine.api import users
 
 class Item(object):
-	def save_item (self,title,typeof,release_date,copies,available,id):
+	def save_item (self,title,typeof,release_date,location,available,id):
 		if id>0:
 			item_k = ndb.Key('LibraryModel','Library','ItemModel',long(id))
 			item = item_k.get()
@@ -13,10 +13,11 @@ class Item(object):
 			lib.put()
 			item = ItemModel(parent=lib.key)
 
+		location_k = ndb.Key('LibraryModel','Library','LocationModel',long(location))
 		item.title = title
 		item.typeof = typeof
 		item.release_date = datetime.date(year=int(release_date[6:10]), month=int(release_date[3:5]), day=int(release_date[0:2]))
-		item.copies = copies
+		item.location = location_k
 		item.available = available
 		item.user_name = users.get_current_user().email()
 		item.put()
