@@ -46,6 +46,45 @@
                     </div>
                 </div>
             </form>
+            <br>
+
+            <form id="location-list" class="form-horizontal" role="form" method="post" action="/">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Library Locations
+                    </div>
+                    <div class="panel-body">
+                        <a href="/createLoc" class="btn btn-lg btn-success">Add Location</a>
+                        
+                        <table class="table table-hover ">
+                            <thead>
+                                <tr>
+                                    <th><input type="submit" class="btn btn-xs btn-danger" name="delete" value="Delete"></th>
+                                    <th>Name</th>
+                                    <th>Phone Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for location in locations %}
+                                <tr>
+                                    <td><input type="checkbox" name="location_id" value="{{location.key.id()}}"></td>
+                                    <td>{{ location.name }}</td>
+                                    <td>{{ location.phone_number }}</td>
+                                    <!-- get numeric ID of entity key -->
+                                    <td><a href="/editLoc?id={{location.key.id()}}" class="btn btn-primary">Edit</a></td>
+                                </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9">No record Found</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+
             <p>
                 <strong>This app validates your Google ID.</strong>
             </p>

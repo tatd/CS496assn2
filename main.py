@@ -4,5 +4,7 @@ from views import *
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/create', CreateHandler),
-    ('/edit', EditHandler)
+    ('/edit', EditHandler),
+    ('/createLoc', CreateLocHandler),
+    ('/editLoc', EditLocHandler)
 ], debug=True)

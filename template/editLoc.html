@@ -1,0 +1,56 @@
+{% extends "template/base.html" %}
+{% block title %}Edit Location{% endblock %}
+{% block content %}
+            <div class="page-header">
+                <h3>Edit Location Record</h3>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a href="/" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-arrow-left"></span>  View Data</a>
+                </div>
+                <div class="panel-body">
+                    <form id="location-entry" class="form-horizontal" role="form" method="post" action="/editLoc">
+                        <input type="hidden" name="id" value = "{{location.key.id()}}">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label" for="name">Name</label>
+                            <div class="col-lg-4">
+                                <input type="text" class="form-control" id="name" name="name" value="{{location.name}}" required pattern=".*\S+.*" title="This field is required."/>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label" for="phone_number">Phone Number</label>
+                            <div class="col-lg-4">
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{location.phone_number}}" pattern="^\d{3}-\d{3}-\d{4}$" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-4">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div> 
+                    </form>
+                </div>
+            </div>
+{% endblock %}
+{% block footer_script %}
+    <script>
+
+        // jQuery plugin to prevent double submission of forms
+        jQuery.fn.preventDoubleSubmission = function () {
+            $(this).on('submit', function (e) {
+                var $form = $(this);
+
+                if ($form.data('submitted') === true) {
+                    // Previously submitted - don't submit again
+                    e.preventDefault();
+                } else {
+                    // Mark it so that the next submit can be ignored
+                    $form.data('submitted', true);
+                }
+            });
+            return this;
+        };
+    </script>   
+{% endblock %}
