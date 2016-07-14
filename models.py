@@ -1,13 +1,13 @@
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 
-class ItemModel (db.Model):
-	timestamp = db.DateTimeProperty(auto_now=True)
-	title = db.StringProperty()
-	typeof = db.StringProperty()
-	release_date = db.DateProperty()
-	copies = db.IntegerProperty()
-	available = db.BooleanProperty()
-	user_name = db.StringProperty()
+class ItemModel (ndb.Model):
+	timestamp = ndb.DateTimeProperty(auto_now=True)
+	title = ndb.StringProperty()
+	typeof = ndb.StringProperty()
+	release_date = ndb.DateProperty()
+	copies = ndb.IntegerProperty()
+	available = ndb.BooleanProperty()
+	user_name = ndb.StringProperty()
 
-class LibraryModel (db.Model):
-	name = db.StringProperty()
+class LibraryModel (ndb.Model):
+	name = ndb.StringProperty()

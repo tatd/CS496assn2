@@ -1,17 +1,17 @@
 from models import ItemModel,LibraryModel
 import datetime
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 from google.appengine.api import users
 
 class Item(object):
 	def save_item (self,title,typeof,release_date,copies,available,id):
 		if id>0:
-			item_k = db.Key.from_path('LibraryModel','Library','ItemModel',long(id))
-			item = db.get(item_k)
+			item_k = ndb.Key('LibraryModel','Library','ItemModel',long(id))
+			item = item_k.get()
 		else:
-			lib = LibraryModel(key_name='Library',name='My Library')
+			lib = LibraryModel(id='Library',name='My Library')
 			lib.put()
-			item = ItemModel(parent = lib)
+			item = ItemModel(parent=lib.key)
 
 		item.title = title
 		item.typeof = typeof
@@ -24,12 +24,13 @@ class Item(object):
 	def delete_item (self, item_ids):
 		if len(item_ids)>0:
 			for item_id in item_ids:
-				item_k = db.Key.from_path('LibraryModel','Library','ItemModel',long(item_id))
-				item = db.get(item_k)
-				db.delete(item_k)
+				item_k = ndb.Key('LibraryModel','Library','ItemModel',long(item_id))
+				item = item_k.get
+				item_k.delete()
 
 	def list_item (self):
-		lib = db.Key.from_path('LibraryModel','Library')
-		item_query = ItemModel.all()
-		item_query.ancestor(lib)
+		lib = ndb.Key('LibraryModel','Library')
+		# This is for full consistency vs eventual consistency
+		#item_query = ItemModel.query()
+		item_query = ItemModel.query(ancestor=lib)
 		return item_query

@@ -5,7 +5,7 @@ import os
 
 from datetime import datetime
 from logics import Item
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 from google.appengine.api import users
 
 jinja_environment = jinja2.Environment(
@@ -55,9 +55,9 @@ class EditHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         if user:
             # get ID of entity Key
-            item_k = db.Key.from_path('LibraryModel','Library','ItemModel',long(self.request.get('id')))
+            item_k = ndb.Key('LibraryModel','Library','ItemModel',long(self.request.get('id')))
             # get entity from key instance
-            item = db.get(item_k)
+            item = item_k.get()
             
             template_values = {'item' : item}
             template = jinja_environment.get_template('template/edit.html')

@@ -2,7 +2,7 @@
 {% block title %}Media Library{% endblock %}
 {% block content %}
             <div class="page-header">
-                <h3>CS496 Assignment 2</h3>
+                <h3>CS496</h3>
                 <h4>Dennis Tat</h4>
             </div>
             <form id="item-list" class="form-horizontal" role="form" method="post" action="/">
@@ -27,14 +27,14 @@
                             <tbody>
                                 {% for item in items %}
                                 <tr>
-                                    <td><input type="checkbox" name="item_id" value="{{item.key().id()}}"></td>
+                                    <td><input type="checkbox" name="item_id" value="{{item.key.id()}}"></td>
                                     <td>{{ item.title }}</td>
                                     <td>{{ item.typeof }}</td>
                                     <td>{{ item.release_date }}</td>
                                     <td>{{ item.copies }}</td>
                                     <td>{% if item.available == True %}Yes{% else %}No{% endif %}</td>
                                     <!-- get numeric ID of entity key -->
-                                    <td><a href="/edit?id={{item.key().id()}}" class="btn btn-primary">Edit</a></td>
+                                    <td><a href="/edit?id={{item.key.id()}}" class="btn btn-primary">Edit</a></td>
                                 </tr>
                                 {% else %}
                                     <tr>
