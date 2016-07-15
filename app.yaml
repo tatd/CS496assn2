@@ -1,4 +1,4 @@
-application: assn2
+application: cs496
 version: 1
 runtime: python27
 api_version: 1
@@ -21,6 +21,9 @@ handlers:
 - url: /fonts
   static_dir: template/fonts
 
+- url: /_ah/spi/.*
+  script: models.application
+
 - url: .*
   script: main.app
 
@@ -30,3 +33,9 @@ libraries:
 
 - name: jinja2
   version: latest
+
+- name: pycrypto
+  version: "2.6"
+
+- name: endpoints
+  version: 1.0

@@ -63,7 +63,7 @@ class EditHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         if user:
             # get ID of entity Key
-            item_k = ndb.Key('LibraryModel','Library','ItemModel',long(self.request.get('id')))
+            item_k = ndb.Key('ItemModel',long(self.request.get('id')))
             # get entity from key instance
             item = item_k.get()
             
@@ -107,7 +107,7 @@ class EditLocHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         if user:
             # get ID of entity Key
-            location_k = ndb.Key('LibraryModel','Library','LocationModel',long(self.request.get('id')))
+            location_k = ndb.Key('LocationModel',long(self.request.get('id')))
             # get entity from key instance
             location = location_k.get()
             
