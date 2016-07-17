@@ -12,11 +12,12 @@ from endpoints_proto_datastore.ndb import EndpointsModel
 class Item(object):
 	def save_item (self,title,typeof,release_date,location,available,id):
 		if id>0:
+			# make new key if there is no key
 			item_k = ndb.Key('ItemModel',long(id))
 			item = item_k.get()
 		else:
 			item = ItemModel()
-
+		# get key
 		location_k = ndb.Key('LocationModel',long(location))
 		item.title = title
 		item.typeof = typeof
@@ -37,6 +38,8 @@ class Item(object):
 		#lib = ndb.Key('LibraryModel','Library')
 		# This is for full consistency vs eventual consistency
 		#item_query = ItemModel.query(ancestor=lib)
+		# no ancestor, so this will be eventual consistency
+		# get items for table
 		item_query = ItemModel.query()
 		return item_query
 
@@ -64,5 +67,6 @@ class Location(object):
 
 	def list_location (self):
 		#lib = ndb.Key('LibraryModel','Library')
+		# get locations for table
 		location_query = LocationModel.query()
 		return location_query

@@ -17,6 +17,7 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         item = Item()
         location = Location() 
+        # get all items and locations
         template_values = {'items' : item.list_item(), 'locations' : location.list_location()}
         template = jinja_environment.get_template('template/index.html')
         self.response.out.write(template.render(template_values))

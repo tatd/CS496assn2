@@ -6,6 +6,7 @@ from protorpc import remote, message_types
 
 from endpoints_proto_datastore.ndb import EndpointsModel
 
+#Endpoints inherits from ndb, so it behaves similarily
 class ItemModel (EndpointsModel):
 
 	_message_fields_schema = ('id', 'title', 'typeof', 'release_date', 'available', 'location')
@@ -18,6 +19,7 @@ class ItemModel (EndpointsModel):
 	#user_name = ndb.StringProperty()
 	location = ndb.KeyProperty(kind='LocationModel')
 
+	# function to return location name in table
 	@property
 	def item_location(self):
 		return self.location.get().name
@@ -32,11 +34,13 @@ class LocationModel (EndpointsModel):
 	phone_number = ndb.StringProperty()
 	name = ndb.StringProperty()
 
+# API stuff
 @endpoints.api(name='mylibrary', version='v1', description='CS496')
 class LibraryApi(remote.Service):
 
 	@ItemModel.method(path='newitem', http_method='POST', name='itemmodel.insert')
 	def ItemModelInsert(self, item_model):
+		# include all parameters to add item
 		if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available or not item_model.location):
 			raise endpoints.NotFoundException('Please supply all parameters.')
 		item_model.put()
@@ -64,6 +68,7 @@ class LibraryApi(remote.Service):
 
 	@LocationModel.method(path='newlocation', http_method='POST', name='locationmodel.insert')
 	def LocationModelInsert(self, location_model):
+		#include all parameters to add new location
 		if (not location_model.name or not location_model.phone_number):
 			raise endpoints.NotFoundException('Please supply all parameters.')
 		location_model.put()

@@ -1,0 +1,125 @@
+** All tests performed with Postman and Google's API explorer
+
+**Add a new location:
+	POST https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/newlocation
+	 
+	{
+	 "name": "Seattle",
+	 "phone_number": "999-999-9999"
+	}
+
+Response:
+	200
+	  
+	{
+	 "phone_number": "999-999-9999",
+	 "name": "Seattle",
+	 "kind": "mylibrary#locationmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/S8HDfDH45yarFoWo3CXEAWpWwmc\""
+	}
+
+**Get a location:
+	GET https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locationmodel/5654313976201216
+
+Response:
+	200
+
+	{
+	 "phone_number": "999-999-9999",
+	 "name": "Seattle",
+	 "kind": "mylibrary#locationmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/S8HDfDH45yarFoWo3CXEAWpWwmc\""
+	}
+
+**Edit a location:
+	PUT https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locationmodel/5654313976201216
+	 
+	{
+	 "phone_number": "111-111-1111"
+	}
+
+Response:
+	200
+
+	{
+	 "phone_number": "111-111-1111",
+	 "name": "Seattle",
+	 "kind": "mylibrary#locationmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/xv6q1t6T5ZmX5WY8Ei5si2sMafc\""
+	}
+
+**Delete location:
+	DELETE https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locationmodel/5639445604728832
+
+Response:
+	204
+
+**Add new item:
+	POST https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/newitem
+	 
+	{
+	 "title": "Millenium",
+	 "typeof": "Music Album",
+	 "release_date": "2000-01-01",
+	 "available": true,
+	 "location": "agxzfmNzNDk2LTEzNzNyGgsSDUxvY2F0aW9uTW9kZWwYgICAgJnShQoM"
+	}
+
+Response:
+	200
+
+	{
+	 "available": true,
+	 "title": "Millenium",
+	 "release_date": "2000-01-01",
+	 "typeof": "Music Album",
+	 "id": "5096363633147904",
+	 "location": "agxzfmNzNDk2LTEzNzNyGgsSDUxvY2F0aW9uTW9kZWwYgICAgJnShQoM",
+	 "kind": "mylibrary#itemmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/SUH95CfgLySXyxer-Qdc5JXNB68\""
+	}
+
+**Edit item:
+	PUT https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/itemmodel/5096363633147904
+	 
+	{
+	 "available": false,
+	 "release_date": "2000-09-09"
+	}
+
+Response:
+	200
+
+	{
+	 "available": false,
+	 "title": "Millenium",
+	 "release_date": "2000-09-09",
+	 "typeof": "Music Album",
+	 "id": "5096363633147904",
+	 "location": "agxzfmNzNDk2LTEzNzNyGgsSDUxvY2F0aW9uTW9kZWwYgICAgJnShQoM",
+	 "kind": "mylibrary#itemmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/HQU162JtIR9HsP88WGypnjzuk6g\""
+	}
+
+**Get item:
+	GET https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/itemmodel/5096363633147904
+
+Response:
+	200
+	 
+	{
+	 "available": false,
+	 "title": "Millenium",
+	 "release_date": "2000-09-09",
+	 "typeof": "Music Album",
+	 "id": "5096363633147904",
+	 "location": "agxzfmNzNDk2LTEzNzNyGgsSDUxvY2F0aW9uTW9kZWwYgICAgJnShQoM",
+	 "kind": "mylibrary#itemmodelItem",
+	 "etag": "\"_Rh-YPRo2c8kMXNpZZoc9lFZSpU/HQU162JtIR9HsP88WGypnjzuk6g\""
+	}
+
+**Delete item:
+	DELETE https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/itemmodel/5722646637445120
+
+Response:
+	204
