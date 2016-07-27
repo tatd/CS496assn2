@@ -9,7 +9,7 @@ from endpoints_proto_datastore.ndb import EndpointsModel
 #Endpoints inherits from ndb, so it behaves similarily
 class ItemModel (EndpointsModel):
 
-	_message_fields_schema = ('id', 'title', 'typeof', 'release_date', 'available', 'location')
+	_message_fields_schema = ('id', 'title', 'typeof', 'release_date', 'available', 'location', 'locationName')
 
 	timestamp = ndb.DateTimeProperty(auto_now=True)
 	title = ndb.StringProperty()
@@ -18,6 +18,7 @@ class ItemModel (EndpointsModel):
 	available = ndb.BooleanProperty()
 	#user_name = ndb.StringProperty()
 	location = ndb.KeyProperty(kind='LocationModel')
+	locationName = ndb.StringProperty()
 
 	# function to return location name in table
 	@property
@@ -27,7 +28,7 @@ class ItemModel (EndpointsModel):
 
 class LocationModel (EndpointsModel):
 
-	_message_fields_schema = ('name', 'phone_number')
+	_message_fields_schema = ('id','name', 'phone_number')
 
 	timestamp = ndb.DateTimeProperty(auto_now=True)
 	#user_name = ndb.StringProperty()
@@ -43,6 +44,7 @@ class LibraryApi(remote.Service):
 		# include all parameters to add item
 		if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available or not item_model.location):
 			raise endpoints.NotFoundException('Please supply all parameters.')
+		item_model.locationName = item_model.item_location
 		item_model.put()
 		return item_model
 
@@ -63,8 +65,13 @@ class LibraryApi(remote.Service):
 	def ItemModelPut(self, item_model):
 		if not item_model.from_datastore:
 			raise endpoints.NotFoundException('Item not found.')
+		item_model.locationName = item_model.item_location
 		item_model.put()
 		return item_model
+
+	@ItemModel.query_method(path='items', name='item.list')
+	def ItemModelList(self, query):
+		return query
 
 	@LocationModel.method(path='newlocation', http_method='POST', name='locationmodel.insert')
 	def LocationModelInsert(self, location_model):
@@ -95,6 +102,9 @@ class LibraryApi(remote.Service):
 		location_model.put()
 		return location_model
 
+	@LocationModel.query_method(path='locations', name='location.list')
+	def LocationModelList(self, query):
+		return query
 
 class LibraryModel (EndpointsModel):
 	name = ndb.StringProperty()
