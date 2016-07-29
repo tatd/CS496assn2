@@ -102,7 +102,7 @@ class LibraryApi(remote.Service):
 		location_model.put()
 		return location_model
 
-	@LocationModel.query_method(path='locations', name='location.list')
+	@LocationModel.query_method(query_fields=('limit', 'order', 'pageToken'), path='locations', name='location.list')
 	def LocationModelList(self, query):
 		return query
 
