@@ -46,10 +46,11 @@ class LibraryApi(remote.Service):
 	@ItemModel.method(path='newitem', http_method='POST', name='itemmodel.insert')
 	def ItemModelInsert(self, item_model):
 		# include all parameters to add item
-		if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available or not item_model.location):
-			raise endpoints.NotFoundException('Please supply all parameters.')
+		#if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available):
+		#	raise endpoints.NotFoundException('Please supply all parameters.')
+		item_model.put()
+		item_model.location = ndb.Key('LocationModel',long(item_model.locationID))
 		item_model.locationName = item_model.item_location
-		item_model.locationID = item_model.item_locationid
 		item_model.put()
 		return item_model
 
@@ -66,12 +67,13 @@ class LibraryApi(remote.Service):
 		item_model._key.delete()
 		return message_types.VoidMessage()
 
-	@ItemModel.method(request_fields=('id','title', 'typeof', 'release_date', 'available', 'location',), path='itemmodel/{id}', http_method='PUT', name='itemmodel.put')
+	@ItemModel.method(request_fields=('id','title', 'typeof', 'release_date', 'available', 'locationID','location'), path='itemmodel/{id}', http_method='PUT', name='itemmodel.put')
 	def ItemModelPut(self, item_model):
 		if not item_model.from_datastore:
 			raise endpoints.NotFoundException('Item not found.')
+		item_model.put()
+		item_model.location = ndb.Key('LocationModel',long(item_model.locationID))
 		item_model.locationName = item_model.item_location
-		item_model.locationID = item_model.item_locationid
 		item_model.put()
 		return item_model
 
