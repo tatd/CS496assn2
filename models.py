@@ -69,7 +69,7 @@ class LibraryApi(remote.Service):
 		item_model.put()
 		return item_model
 
-	@ItemModel.query_method(path='items', name='item.list')
+	@ItemModel.query_method(query_fields=('limit', 'order', 'pageToken'), path='items', name='item.list')
 	def ItemModelList(self, query):
 		return query
 
@@ -81,7 +81,6 @@ class LibraryApi(remote.Service):
 		location_model.put()
 		return location_model
 		
-
 	@LocationModel.method(request_fields=('id',), path='locationmodel/{id}', http_method='GET', name='locationmodel.get')
 	def LocationModelGet(self, location_model):
 		if not location_model.from_datastore:
