@@ -9,7 +9,7 @@ from endpoints_proto_datastore.ndb import EndpointsModel
 #Endpoints inherits from ndb, so it behaves similarily
 class ItemModel (EndpointsModel):
 
-	_message_fields_schema = ('id', 'title', 'typeof', 'release_date', 'available', 'location', 'locationName')
+	_message_fields_schema = ('id', 'title', 'typeof', 'release_date', 'available', 'location', 'locationName', 'locationID')
 
 	timestamp = ndb.DateTimeProperty(auto_now=True)
 	title = ndb.StringProperty()
@@ -19,12 +19,16 @@ class ItemModel (EndpointsModel):
 	#user_name = ndb.StringProperty()
 	location = ndb.KeyProperty(kind='LocationModel')
 	locationName = ndb.StringProperty()
+	locationID = ndb.IntegerProperty()
 
 	# function to return location name in table
 	@property
 	def item_location(self):
 		return self.location.get().name
 
+	@property
+	def item_locationid(self):
+		return self.location.get().id
 
 class LocationModel (EndpointsModel):
 
@@ -45,6 +49,7 @@ class LibraryApi(remote.Service):
 		if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available or not item_model.location):
 			raise endpoints.NotFoundException('Please supply all parameters.')
 		item_model.locationName = item_model.item_location
+		item_model.locationID = item_model.item_locationid
 		item_model.put()
 		return item_model
 
@@ -66,6 +71,7 @@ class LibraryApi(remote.Service):
 		if not item_model.from_datastore:
 			raise endpoints.NotFoundException('Item not found.')
 		item_model.locationName = item_model.item_location
+		item_model.locationID = item_model.item_locationid
 		item_model.put()
 		return item_model
 
@@ -80,7 +86,7 @@ class LibraryApi(remote.Service):
 			raise endpoints.NotFoundException('Please supply all parameters.')
 		location_model.put()
 		return location_model
-		
+
 	@LocationModel.method(request_fields=('id',), path='locationmodel/{id}', http_method='GET', name='locationmodel.get')
 	def LocationModelGet(self, location_model):
 		if not location_model.from_datastore:

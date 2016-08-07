@@ -24,6 +24,7 @@ class Item(object):
 		item.release_date = datetime.date(year=int(release_date[6:10]), month=int(release_date[3:5]), day=int(release_date[0:2]))
 		item.location = location_k
 		item.locationName = item.item_location
+		item.locationID = long(location)
 		item.available = available
 		#item.user_name = users.get_current_user().email()
 		item.put()
