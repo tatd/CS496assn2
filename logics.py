@@ -26,7 +26,7 @@ class Item(object):
 		item.locationName = item.item_location
 		item.locationID = long(location)
 		item.available = available
-		#item.user_name = users.get_current_user().email()
+		item.username = users.get_current_user().email()
 		item.put()
 
 	def delete_item (self, item_ids):
@@ -57,7 +57,7 @@ class Location(object):
 
 		location.name = name
 		location.phone_number = phone_number
-		location.user_name = users.get_current_user().email()
+		location.username = users.get_current_user().email()
 		location.put()
 
 	def delete_location (self, location_ids):
