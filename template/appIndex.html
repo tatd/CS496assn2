@@ -1,0 +1,1089 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+
+    <meta name="viewport" content="width=device-width, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" href="/css/jquery.mobile-1.4.5.min.css">
+    <style type="text/css">
+    .ui-bar {
+    padding :5px 0px 5px 0px !important;
+    margin :5px 0px 5px 0px !important;
+    }
+
+    
+    /*.error {
+    color:black;
+    }*/
+    </style>
+
+    <script src="/js/jquery-3.1.0.min.js"></script> 
+    <script src="/js/jquery-migrate-3.0.0.min.js"></script>
+
+    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/additional-methods.min.js"></script>
+
+    <script type="text/javascript" src="/js/jquery.mobile-1.4.5.min.js"></script>
+
+    <script type='text/javascript'>
+//http://stackoverflow.com/questions/18051227/how-to-populate-a-jquery-mobile-listview-with-json-data
+
+var globalUsername = "";
+var info =[];
+var locdata = [];
+
+$(document).on("pageshow", "#loclist-page", function(){
+    getLocations();
+});
+
+
+$(document).on("pagebeforeshow", "#loclist-page", function getLocations0() {
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locations?limit=100", function(data){
+
+            locdata = data.items;
+            //console.log(locdata[0].name);
+
+            info = locdata;
+            //console.log(info);
+            //console.log(locdata);
+    //set up string for adding <li/>
+    var li = "";
+    //container for $li to be added
+    $.each(info, function (i, location) {
+        //add to list items
+        li += '<li><a href="#" id="' + i + '" class="info-go">' + location.name +'<p>' + location.phone_number +'</p></a></li>';
+    });
+    $("#loc-list").empty();
+    //append list to ul
+    $("#loc-list").append(li).promise().done(function () {
+        //append list items to list
+        $(this).off();
+        $(this).on("click", ".info-go", function (e) {
+            e.preventDefault();
+            //store the information in the next page's data
+            $("#locdetails-page").data("info", info[this.id]);
+
+            //change the page # to details page when clicked 
+            console.log("changing pages");
+            $.mobile.changePage("#locdetails-page");
+            return false;
+        });
+
+        $(this).listview("refresh");
+    });
+        });
+});
+
+
+$(document).on("pagebeforeshow", "#locdetails-page", function () {
+    //get from data - you put this here when the "a" wa clicked in the previous page
+    var info = $(this).data("info");
+    //string to put HTML in
+    var info_view = "";
+    var infoview = "";
+    var infoview2 = "";
+/*
+    infoview += '<div class="ui-grid-a"><div class="ui-block-a"><div class="ui-bar field" style="font-weight : bold; text-align: left;">Name: ' + '</div></div><div class="ui-block-b"><div class="ui-bar value" style="width : 75%">' + info.name + '</div></div> <div class="ui-block-a"><div class="ui-bar field" style="font-weight : bold; text-align: left;">Phone Number: ' + '</div></div><div class="ui-block-b"><div class="ui-bar value" style="width : 75%">' + info.phone_number + '</div></div> </div>';
+
+    infoview +='<div data-role="main" class="ui-content"><div><div><form id="locEditForm" action="#edditloc-page" method="post"><div><label for="editLocNameInput">Name:</label><input type="text" name="editLocNameInput" id="editLocNameInput" placeholder="Name" value="" required pattern=".*\S+.*"></div></form></div></div></div>';
+*/
+    document.getElementById("editLocNameInput").value = info.name;
+
+    document.getElementById("editLocPhoneInput").value = info.phone_number;
+
+    document.getElementById("editLocID").value = info.id;
+
+});
+
+// handles login form
+$(window).load(function(){
+$('#loginForm').validate({
+    /*rules: {
+        locNameInput: {
+            required: true
+        },
+        locPhoneInput: {
+            required: true
+        },
+        email: {
+            required: true
+        }
+    },
+    messages: {
+        locNameInput: {
+            required: "<font color='red'>Please enter a name.</font>"
+        },
+        locPhoneInput: {
+            required: "<font color='red'>Please enter a phone number.</font>"
+        },
+        lname: {
+            required: "Please enter your email."
+        }
+    },
+    errorPlacement: function (error, element) {
+        error.appendTo(element.parent().prev());
+    },*/
+    submitHandler: function (loginForm) {
+        //console.log($('[name=createEmail]').val());
+        //console.log($('[name=createPassword]').val());
+        paramUsername = $('[name=usernameLogin]').val();
+        paramPassword = $('[name=passwordLogin]').val();
+
+        $.ajax({
+            // GET request to find matching username and password
+            type: 'GET',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/users?password=' + paramPassword + '&username=' + paramUsername,
+            dataType: "json",
+            contentType: "application/json"
+        }).done(function(data) {
+                //console.log(data);
+                if(data.items != undefined) {
+                    //console.log("success");
+                    // set username for application
+                    globalUsername = data.items[0].username;
+
+                    // fill divs with username
+                    var usernameDivs = document.getElementsByName("usernameHeader");
+                    var i;
+                    for(i = 0; i < usernameDivs.length; i++){
+                    usernameDivs[i].innerHTML = globalUsername;
+                    }
+
+                    //console.log("username: ", globalUsername);
+
+                    $(':mobile-pagecontainer').pagecontainer('change', '#index1', {
+                    reload: false
+                    });
+        
+                    toast("Log-in successful");
+                    return false;
+
+                } else {
+                    //console.log("Error");
+
+                    // username and password don't match
+                    toast("Log-in Error");
+                    return false;
+                }
+            });
+
+        //globalUsername = paramUsername;
+        
+        resetForm('#loginForm');
+        
+        
+        
+
+    }
+});
+});
+
+// handles create account form
+$(window).load(function(){
+$('#createAccountForm').validate({
+    rules: {
+        createUsername: {
+            required: true
+        },
+        createPassword: {
+            required: true
+        }
+    },
+    messages: {
+        createUsername: {
+            required: "<font color='red'>Please enter a username.</font>"
+        },
+        createPassword: {
+            required: "<font color='red'>Please enter a password.</font>"
+        }
+    },
+    errorPlacement: function (error, element) {
+        error.appendTo(element.parent().prev());
+    },
+    submitHandler: function (createAccountForm) {
+        //console.log($('[name=createEmail]').val());
+        //console.log($('[name=createPassword]').val());
+
+        // POST a new user
+        $.ajax({
+            type: 'POST',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/newuser',
+            data: JSON.stringify({
+                username: $('[name=createUsername]').val(), 
+                password: $('[name=createPassword]').val()
+            }),
+            function(data) {
+                console.log(data);
+                if(data != "") {
+                    console.log("success");
+                    // do something
+                } else {
+                    console.log("Couldn't connect");
+                    // couldn't connect
+                }
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
+
+        resetForm('#createAccountForm');
+        
+        $(':mobile-pagecontainer').pagecontainer('change', '#index', {
+            reload: false
+        });
+        
+        toast("Account Created");
+        return false;
+        
+
+    }
+});
+});
+
+
+$(window).load(function(){
+$('#locForm').validate({
+    rules: {
+        locNameInput: {
+            required: true
+        },
+        locPhoneInput: {
+            required: true
+        }/*,
+        email: {
+            required: true
+        }*/
+    },
+    messages: {
+        locNameInput: {
+            required: "<font color='red'>Please enter a name.</font>"
+        },
+        locPhoneInput: {
+            required: "<font color='red'>Please enter a phone number.</font>"
+        }/*,
+        lname: {
+            required: "Please enter your email."
+        }*/
+    },
+    errorPlacement: function (error, element) {
+        error.appendTo(element.parent().prev());
+    },
+    submitHandler: function (locForm) {
+        console.log($('[name=locNameInput]').val());
+        console.log($('[name=locPhoneInput]').val());
+
+        // POST request to add new location
+        // gets user input from form
+        $.ajax({
+            type: 'POST',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/newlocation',
+            data: JSON.stringify({
+                name: $('[name=locNameInput]').val(), 
+                phone_number: $('[name=locPhoneInput]').val()
+            }),
+            function(data) {
+                console.log(data);
+                if(data != "") {
+                    console.log("success");
+                    // do something
+                } else {
+                    console.log("Couldn't connect");
+                    // couldn't connect
+                }
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
+
+        // reset form after data is sent
+        resetForm('#locForm');
+        
+        // go back to add location page
+        $(':mobile-pagecontainer').pagecontainer('change', '#addloc-page', {
+            reload: false
+        });
+        
+        // notify user that new location was added
+        toast("Location added");
+        return false;
+        
+
+    }
+});
+});
+
+// handles location edit form
+$(window).load(function(){
+$('#locEditForm').validate({
+    rules: {
+        editLocNameInput: {
+            required: true
+        },
+        editLocPhoneInput: {
+            required: true
+        }/*,
+        email: {
+            required: true
+        }*/
+    },
+    messages: {
+        editLocNameInput: {
+            required: "<font color='red'>Please enter a name.</font>"
+        },
+        editLocPhoneInput: {
+            required: "<font color='red'>Please enter a phone number.</font>"
+        }/*,
+        lname: {
+            required: "Please enter your email."
+        }*/
+    },
+    errorPlacement: function (error, element) {
+        error.appendTo(element.parent().prev());
+    },
+    submitHandler: function (editLocForm) {
+        var putLocID = $('[name=editLocID]').val();
+        //console.log($('[name=editLocNameInput]').val());
+        //console.log($('[name=editLocPhoneInput]').val());
+        //console.log($(putLocID));
+
+        // PUT request at specific item ID
+        $.ajax({
+            type: 'PUT',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locationmodel/' + putLocID,
+            data: JSON.stringify({
+                name: $('[name=editLocNameInput]').val(), 
+                phone_number: $('[name=editLocPhoneInput]').val()
+            }),
+            function(data) {
+                console.log(data);
+                if(data != "") {
+                    console.log("success");
+                    // do something
+                } else {
+                    console.log("Couldn't connect");
+                    // couldn't connect
+                }
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
+
+        //resetForm();
+        $("#loc-list").listview("refresh");
+        $(':mobile-pagecontainer').pagecontainer('change', '#loclist-page', {
+            reload: false
+        });
+        $("#loc-list").listview("refresh");
+        toast("Location saved");
+        return false;
+        
+
+    }
+});
+});
+
+
+function getLocations() {
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locations?limit=100", function(data){
+
+            locdata = data.items;
+            //console.log(locdata[0].name);
+
+            info = locdata;
+            //console.log(info);
+            //console.log(locdata);
+
+    //set up string for adding <li/>
+    var li = "";
+
+    $.each(info, function (i, location) {
+        li += '<li><a href="#" id="' + i + '" class="info-go">' + location.name +'<p>' + location.phone_number +'</p></a></li>';
+    });
+    $("#loc-list").empty();
+    //append list to ul
+    $("#loc-list").append(li).promise().done(function () {
+
+        //add the click event for the redirection to #details-page
+        $(this).off();
+        $(this).on("click", ".info-go", function (e) {
+            e.preventDefault();
+            $("#locdetails-page").data("info", info[this.id]);
+            
+            console.log("changing pages");
+            $.mobile.changePage("#locdetails-page");
+            return false;
+        });
+
+        //refresh list to enhance its styling.
+        $(this).listview("refresh");
+    });
+        });
+}
+
+// refresh item list on page switch
+$(document).on("pageshow", "#itemlist-page", function(){
+    getItems();
+});
+
+
+$(document).on("pagebeforeshow", "#itemlist-page", function getItems0() {
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/items?limit=100&username=" + globalUsername, function(data){
+
+            itemdata = data.items;
+            //console.log(locdata[0].name);
+
+            info = itemdata;
+            //console.log(info);
+            //console.log(locdata);
+    //set up string for adding <li/>
+    var li = "";
+    //container for $li to be added
+    $.each(info, function (i, item) {
+
+        li += '<li><a href="#" id="' + i + '" class="info-go">' + item.title +'<p>' + item.locationName +'</p></a></li>';
+    });
+    $("#item-list").empty();
+    //append list to ul
+    $("#item-list").append(li).promise().done(function () {
+        $(this).off();
+        $(this).on("click", ".info-go", function (e) {
+            e.preventDefault();
+            $("#itemdetails-page").data("info", info[this.id]);
+            console.log("changing pages");
+            $.mobile.changePage("#itemdetails-page");
+            return false;
+        });
+
+        $(this).listview("refresh");
+    });
+        });
+});
+
+
+$(document).on("pagebeforeshow", "#itemdetails-page", function () {
+    var info = $(this).data("info");
+    //string to put HTML in
+    var info_view = "";
+    var infoview = "";
+    var infoview2 = "";
+
+    // GET request to get locations
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locations?limit=100", function(data){
+        info2 = data.items;
+        var sel = '';
+
+        // add html to the string for each location
+        $.each(info2, function(i, location) {
+            sel += '<option value="';
+            sel += location.id;
+            sel += '">'
+            sel += location.name;
+            sel += '</option>';
+        });
+
+        $('#editItemLocationInput').empty();
+        $('#editItemLocationInput').append(sel);
+        //console.log(sel);
+
+        $('#editItemLocationInput').val(info.locationID).change();
+    });
+
+    // populate inputs with info
+    document.getElementById("editItemTitleInput").value = info.title;
+    document.getElementById("editItemID").value = info.id;
+
+});
+
+$(document).on("pagebeforeshow", "#additem-page", function() {
+    // GET request to get locations
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locations?limit=100", function(data){
+
+        info = data.items;
+        //var sel = '';
+        var sel = '<option selected disabled hidden style="display: none" value=""></option>';
+        // select input for location
+        $.each(info, function(i, location) {
+            sel += '<option name="optiontext" value="';
+            sel += location.id;
+            sel += '">'
+            sel += location.name;
+            sel += '</option>';
+        });
+
+        $('#itemLocationInput').empty();
+        $('#itemLocationInput').append(sel);
+    });
+});
+
+// handles new item form
+$(window).load(function(){
+$('#itemForm').validate({
+    rules: {
+        itemTitleInput: {
+            required: true
+        },
+        itemLocationInput: {
+            required: true
+        }/*,
+        email: {
+            required: true
+        }*/
+    },
+    messages: {
+        itemTitleInput: {
+            required: "<font color='red'>Please enter a title.</font>"
+        },
+        itemLocationInput: {
+            required: "<font color='red'>Please select a location.</font>"
+        }/*,
+        lname: {
+            required: "Please enter your email."
+        }*/
+    },
+    errorPlacement: function (error, element) {
+        if(element.attr("id") == "itemLocationInput"){
+            error.appendTo('#errordiv');
+        }
+        if(element.attr("id") == "itemTitleInput"){
+            error.appendTo('#errordiv0');
+        }
+    },
+    submitHandler: function (itemForm) {
+        //console.log($('[name=itemTitleInput]').val());
+        //console.log($('[name=locPhoneInput]').val());
+
+        // POST new item
+        $.ajax({
+            type: 'POST',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/newitem',
+            data: JSON.stringify({
+                title: $('[name=itemTitleInput]').val(),
+                locationID: $('[name=itemLocationInput]').val(),
+                username: globalUsername
+            }),
+            function(data) {
+                console.log(data);
+                if(data != "") {
+                    console.log("success");
+                    // do something
+                } else {
+                    console.log("Couldn't connect");
+                    // couldn't connect
+                }
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
+
+        resetForm('#itemForm');
+        
+        $(':mobile-pagecontainer').pagecontainer('change', '#additem-page', {
+            reload: false
+        });
+        
+        toast("Item added");
+        return false;
+        
+
+    }
+});
+});
+
+// handles item edit form
+$(window).load(function(){
+$('#itemEditForm').validate({
+    rules: {
+        editItemTitleInput: {
+            required: true
+        }/*,
+        editLocPhoneInput: {
+            required: true
+        },
+        email: {
+            required: true
+        }*/
+    },
+    messages: {
+        editItemTitleInput: {
+            required: "<font color='red'>Please enter a title.</font>"
+        }/*,
+        editLocPhoneInput: {
+            required: "Please enter a phone number."
+        },
+        lname: {
+            required: "Please enter your email."
+        }*/
+    },
+    errorPlacement: function (error, element) {
+        error.appendTo(element.parent().prev());
+    },
+    submitHandler: function (itemEditForm) {
+        var putItemID = $('[name=editItemID]').val();
+        //console.log("item title: ", $('[name=editItemTitleInput]').val());
+        //console.log("item loc: ", $('[name=editItemLocationInput]').val());
+        //console.log($('[name=editLocPhoneInput]').val());
+        //console.log($(putLocID));
+
+        // PUT item at specific item ID
+        $.ajax({
+            type: 'PUT',
+            url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/itemmodel/' + putItemID,
+            data: JSON.stringify({
+                title: $('[name=editItemTitleInput]').val(),
+                locationID: $('[name=editItemLocationInput]').val(), 
+                username: globalUsername
+                //phone_number: $('[name=editLocPhoneInput]').val()
+            }),
+            function(data) {
+                console.log(data);
+                if(data != "") {
+                    console.log("success");
+                    // do something
+                } else {
+                    console.log("Couldn't connect");
+                    // couldn't connect
+                }
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
+
+        //resetForm();
+        $("#item-list").listview("refresh");
+        $(':mobile-pagecontainer').pagecontainer('change', '#itemlist-page', {
+            reload: false
+        });
+        $("#item-list").listview("refresh");
+        toast("Item saved");
+        return false;
+        
+
+    }
+});
+});
+
+// GET request to refresh the list of items
+function getItems() {
+    $.getJSON("https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/items?limit=100&username=" + globalUsername, function(data){
+
+            itemdata = data.items;
+            //console.log(locdata[0].name);
+
+            info = itemdata;
+            //console.log(info);
+            //console.log(locdata);
+    //set up string for adding <li/>
+    var li = "";
+    //container for $li to be added
+    $.each(info, function (i, item) {
+        li += '<li><a href="#" id="' + i + '" class="info-go">' + item.title +'<p>' + item.locationName +'</p></a></li>';
+    });
+    $("#item-list").empty();
+    //append list to ul
+    $("#item-list").append(li).promise().done(function () {
+
+        $(this).off();
+        $(this).on("click", ".info-go", function (e) {
+            e.preventDefault();
+            $("#itemdetails-page").data("info", info[this.id]);
+            
+            console.log("changing pages");
+            $.mobile.changePage("#itemdetails-page");
+            return false;
+        });
+
+        $(this).listview("refresh");
+    });
+        });
+}
+
+// DELETE request for item ID
+function deleteItem(){
+    var deleteItemID = document.getElementById("editItemID").value;
+    $.ajax({
+        type: 'DELETE',
+        url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/itemmodel/' + deleteItemID,
+        function(data){
+        }
+    });
+    $(':mobile-pagecontainer').pagecontainer('change', '#itemlist-page', {
+            reload: false
+            });
+    toast("Item deleted");
+}
+
+// DELETE request for location ID
+function deleteLocation(){
+    var deleteLocationID = document.getElementById("editLocID").value;
+    $.ajax({
+        type: 'DELETE',
+        url: 'https://cs496-1373.appspot.com/_ah/api/mylibrary/v1/locationmodel/' + deleteLocationID,
+        function(data){
+        }
+    });
+    $(':mobile-pagecontainer').pagecontainer('change', '#loclist-page', {
+            reload: false
+            });
+    toast("Location deleted");
+}
+
+// clears username when user logs out
+function logout(){
+    globalUsername = "";
+    var usernameDivs = document.getElementsByName("usernameHeader");
+        var i;
+        for(i = 0; i < usernameDivs.length; i++){
+        usernameDivs[i].innerHTML = globalUsername;
+        }
+    //console.log("logged out. username: ", globalUsername);
+}
+
+// function to reset the input form
+function resetForm(inputForm) {
+    //$('#locForm')[0].reset();
+    $(inputForm)[0].reset();
+    $("label.error").hide();
+  $(".error").removeClass("error");
+}
+
+/*
+function resetForm1() {
+    $('#itemForm')[0].reset();
+    //$('#locform').validate().resetForm();
+    $("label.error").hide();
+  $(".error").removeClass("error");
+}
+*/
+
+// toast-like notification
+// https://gist.github.com/kamranzafar/3136584
+function toast(message) {
+    var $toast = $('<div class="ui-loader ui-overlay-shadow ui-body-e ui-corner-all"><h3>' + message + '</h3></div>');
+
+    $toast.css({
+        display: 'block', 
+        background: '#fff',
+        opacity: 0.90, 
+        position: 'fixed',
+        padding: '7px',
+        'text-align': 'center',
+        width: '270px',
+        left: ($(window).width() - 284) / 2,
+        top: $(window).height() / 2 - 20
+    });
+
+    var removeToast = function(){
+        $(this).remove();
+    };
+
+    $toast.click(removeToast);
+
+    $toast.appendTo($.mobile.pageContainer).delay(2000);
+    $toast.fadeOut(400, removeToast);
+}
+</script>
+
+
+<script type="text/javascript">
+//https://github.com/apache/cordova-plugin-geolocation
+// function to get current GPS coordinates
+var OpenWeatherAppKey = "065f5b04418b58287985a5ade2dff70d";
+var lat = 47.61;
+var long = -122.33;
+
+function getWeather(latitude, longitude) {
+
+    var queryString =
+      'http://api.openweathermap.org/data/2.5/weather?lat='
+      + latitude + '&lon=' + longitude + '&appid=' + OpenWeatherAppKey + '&units=imperial';
+
+    $.getJSON(queryString, function (results) {
+
+        if (results.weather.length) {
+
+            $.getJSON(queryString, function (results) {
+
+                if (results.weather.length) {
+
+                    $('#description').text(results.name);
+                    //console.log(results.name);
+
+                    document.getElementById("locNameInput").value = results.name;
+                     //$("label.error").hide();
+  //$(".error").removeClass("error");
+                    
+                }
+
+            });
+        }
+    }).fail(function () {
+        console.log("error getting location");
+        toast("Error getting location");
+    });
+}
+
+function getCurrentLocation(){
+    getWeather(lat, long);
+}
+
+</script>
+
+  <title>CS496 by Dennis Tat</title>
+  
+</head>
+
+<body>
+  <!--index page -->
+  
+<div data-role="page" id="index">
+    <div data-role="header" data-theme="b">
+         <h1> Media Library</h1>
+
+    </div>
+    
+    <div data-role="content">
+    <h2>Log in</h2>
+    <form id="loginForm" action="#index1" method="post">
+        <div>
+            <label for="usernameLogin">Username:</label>
+            <input type="text" name="usernameLogin" placeholder="Username" value="">
+        </div>
+        <div>
+            <label for="passwordLogin">Password:</label>
+            <input type="password" name="passwordLogin" placeholder="Password" value="">
+        </div>
+        <div>
+            <input type="submit" value="Log in">
+        </div>
+    </form>
+    <br>
+    <h2>Create an Account</h2>
+        <div>
+            <a href="#createAccount-page" class="ui-btn">Create Account</a>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!--create account page-->
+<div data-role="page" id="createAccount-page">
+    <div data-role="header" data-theme="b">
+    <a href="#index" class="ui-btn" onclick="resetForm(createAccountForm)">Back</a>
+    <h1>Media Library</h1>
+    </div>
+    <div data-role="content">
+    <h2>Create an Account</h2>
+    <form id="createAccountForm" action="#index" method="post">
+        <div>
+            <label for="createUsername">Username:</label>
+            <input type="text" name="createUsername" placeholder="Username" value="" required pattern=".*\S+.*">
+        </div>
+        <div>
+            <label for="createPassword">Password:</label>
+            <input type="password" name="createPassword" placeholder="Password" value="" required pattern=".*\S+.*">
+        </div>
+        <div>
+            <input type="submit" value="Create Account">
+        </div>
+    </form>
+    </div>
+</div>
+
+
+  <!--index1 page -->
+  
+<div data-role="page" id="index1">
+    <div data-role="header" data-theme="b">
+        <a href="#index" class="ui-btn" onclick="logout();">Log Out</a>
+         <h1> Media Library</h1>
+         <a class="ui-btn ui-state-disabled" name="usernameHeader"></a>
+
+    </div>
+    
+    <div data-role="content">
+    <div>
+        <a href="#itemlist-page" class="ui-btn">View Items</a>
+    </div>
+    <div>
+        <a href="#loclist-page" class="ui-btn">View Locations</a>
+    </div>
+    </div>
+</div>
+
+
+  <!--Location list page -->
+  
+<div data-role="page" id="loclist-page" data-cache="false">
+    <div data-role="header" data-theme="b">
+        <a href="#index1" data-role="button">Home</a>
+        <h1> Locations</h1>
+        <a class="ui-btn ui-state-disabled" name="usernameHeader"></a>
+
+    </div>
+    
+    <div data-role="content">
+    <div>
+        <a href="#addloc-page" class="ui-btn">Add Location</a>
+    </div>
+        <ul data-role="listview" id="loc-list" data-divider-theme="a" data-inset="true" data-filter="true" data-filter-placeholder="Search locations...">
+            <li data-role="list-divider" data-theme="b" role="heading">Locations</li>
+        </ul>
+    </div>
+</div>
+
+<!--location detail page -->
+<div data-role="page" id="locdetails-page">
+    <div data-role="header" data-theme="b">
+        <a href="#loclist-page" data-rel="back" data-role="button">Go back</a>
+        <h1>Edit Location</h1>
+        <a data-role="button" onclick="deleteLocation();">Delete</a>
+    </div>
+    <div data-role="content"></div>
+
+    <div data-role="main" class="ui-content">
+        <div>
+        <form id="locEditForm" action="#locdetails-page" method="post">
+        <div>
+            <label for="editLocNameInput">Name:</label>
+            <input type="text" name="editLocNameInput" id="editLocNameInput" placeholder="Name" value="" required pattern=".*\S+.*">
+        </div>
+        <br>
+        <div>
+            <label for="editLocPhoneInput">Phone Number (format: xxx-xxx-xxxx):</label>
+            <input type="text" name="editLocPhoneInput" id="editLocPhoneInput" placeholder="xxx-xxx-xxxx" pattern="^\d{3}-\d{3}-\d{4}$" required>
+        </div>
+        <input type="hidden" name="editLocID" id="editLocID">
+        <br>
+        <div>
+            <input type="submit" value="Save Changes">
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+  
+<!-- add location page -->
+<div data-role="page" id="addloc-page">
+    <div data-role="header" data-theme="b">
+        <a href="#loclist-page" data-rel="back" data-role="button" onclick="resetForm('#locForm');">Go back</a>
+        <h1>Add Location</h1>
+        <a class="ui-btn ui-state-disabled" name="usernameHeader"></a>
+    </div>
+    <div data-role="main" class="ui-content">
+    <form id="locForm" action="#addloc-page" method="post">
+
+        <div>
+        <label for="locNameInput">Name:</label>
+        <input type="text" name="locNameInput" id="locNameInput" placeholder="Name" value="" required pattern=".*\S+.*">
+
+        <button type="button" class="ui-btn ui-icon-location ui-btn-icon-left" onclick="getCurrentLocation();">Use Current Location (Default Seattle for web app)</button>
+
+        </div>
+        <br>
+        <div>
+        <label for="locPhoneInput">Phone Number (format: xxx-xxx-xxxx):</label>
+        <input type="text" name="locPhoneInput" id="locPhoneInput" placeholder="xxx-xxx-xxxx" pattern="^\d{3}-\d{3}-\d{4}$" required>
+        </div>
+        <br>
+        <div>
+        <input type="submit" value="Add Location">
+        </div>
+    </form>
+    </div>
+</div>
+
+
+
+  <!--Item list page -->
+  
+<div data-role="page" id="itemlist-page" data-cache="false">
+    <div data-role="header" data-theme="b">
+        <a href="#index1" data-role="button">Home</a>
+        <h1> Items</h1>
+        <a class="ui-btn ui-state-disabled" name="usernameHeader"></a>
+
+    </div>
+    
+    <div data-role="content">
+    <div>
+        <a href="#additem-page" class="ui-btn">Add Item</a>
+    </div>
+        <ul data-role="listview" id="item-list" data-divider-theme="a" data-inset="true" data-filter="true" data-filter-placeholder="Search items...">
+            <li data-role="list-divider" data-theme="b" role="heading">Items</li>
+        </ul>
+    </div>
+</div>
+
+<!--item detail page -->
+<div data-role="page" id="itemdetails-page">
+    <div data-role="header" data-theme="b"><a href="#itemlist-page" data-rel="back" data-role="button" onclick="resetForm('#itemEditForm');">Go back</a>
+        <h1>Edit Item</h1>
+        <a data-role="button" onclick="deleteItem();">Delete</a>
+    </div>
+
+    <div data-role="main" class="ui-content">
+        <div>
+        <form id="itemEditForm" action="#itemdetails-page" method="post">
+        <div>
+            <label for="editItemTitleInput">Title:</label>
+            <input type="text" name="editItemTitleInput" id="editItemTitleInput" placeholder="Title" value="" required pattern=".*\S+.*">
+        </div>
+        <br>
+        <div>
+            <label for="editItemLocationInput">Location:</label>
+        <input type="hidden" name="editItemID" id="editItemID">
+        <select name="editItemLocationInput" id="editItemLocationInput">
+            
+        </select>
+        </div>
+        <br>
+        <div>
+            <input type="submit" value="Save Changes">
+        </div>
+        </form>
+        <div data-role="content"></div>
+        </div>
+    </div>
+</div>
+  
+<!-- add item page -->
+<div data-role="page" id="additem-page">
+    <div data-role="header" data-theme="b">
+        <a href="#itemlist-page" data-rel="back" data-role="button" onclick="resetForm('#itemForm');">Go back</a>
+        <h1>Add Item</h1>
+        <a class="ui-btn ui-state-disabled" name="usernameHeader"></a>
+    </div>
+    <div data-role="main" class="ui-content">
+    <form id="itemForm" action="#additem-page" method="post">
+    <div id="errordiv0"></div>
+        <div>
+        <label for="itemTitleInput">Title:</label>
+        <input type="text" name="itemTitleInput" id="itemTitleInput" placeholder="Title" value="" required pattern=".*\S+.*">
+        </div>
+        <br>
+        <div id="errordiv"></div>
+        <div>
+            <label for="itemLocationInput">Location:</label>
+        <select name="itemLocationInput" id="itemLocationInput" required>
+            
+        </select>
+        </div>
+        <br>
+        <div>
+        <input type="submit" value="Add Item">
+        </div>
+    </form>
+    </div>
+</div>
+
+
+
+</body>
+
+    
+
+</html>
+

@@ -6,5 +6,6 @@ app = webapp2.WSGIApplication([
     ('/create', CreateHandler),
     ('/edit', EditHandler),
     ('/createLoc', CreateLocHandler),
-    ('/editLoc', EditLocHandler)
+    ('/editLoc', EditLocHandler),
+    ('/appIndex', appIndexHandler)
 ], debug=True)

@@ -21,11 +21,12 @@ class ItemModel (EndpointsModel):
 	locationName = ndb.StringProperty()
 	locationID = ndb.IntegerProperty()
 
-	# function to return location name in table
+	# function to return location name
 	@property
 	def item_location(self):
 		return self.location.get().name
 
+	# function to return a location's id
 	@property
 	def item_locationid(self):
 		return self.location.get().id
@@ -39,6 +40,7 @@ class LocationModel (EndpointsModel):
 	phone_number = ndb.StringProperty()
 	name = ndb.StringProperty()
 
+# this class is used for accounts
 class UserModel (EndpointsModel):
 	
 	_message_fields_schema = ('id','username', 'password')
@@ -57,6 +59,7 @@ class LibraryApi(remote.Service):
 		#if (not item_model.title or not item_model.typeof or not item_model.release_date or not item_model.available):
 		#	raise endpoints.NotFoundException('Please supply all parameters.')
 		item_model.put()
+		# get key and name of location, then save the item again
 		item_model.location = ndb.Key('LocationModel',long(item_model.locationID))
 		item_model.locationName = item_model.item_location
 		item_model.put()
@@ -80,6 +83,7 @@ class LibraryApi(remote.Service):
 		if not item_model.from_datastore:
 			raise endpoints.NotFoundException('Item not found.')
 		item_model.put()
+		# get key and name of location, then save the item again
 		item_model.location = ndb.Key('LocationModel',long(item_model.locationID))
 		item_model.locationName = item_model.item_location
 		item_model.put()

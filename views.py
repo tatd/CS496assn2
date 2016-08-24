@@ -125,3 +125,10 @@ class EditLocHandler(webapp2.RequestHandler):
         location = Location()
         location.save_location (input_name,input_phone_number,long(input_id))
         self.redirect('/')
+
+class appIndexHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = jinja_environment.get_template('template/appIndex.html')
+        self.response.out.write(template.render(template_values))
+        
