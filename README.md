@@ -13,5 +13,5 @@ This application is backed by Google Cloud Datastore NDB. The non-relational dat
 
 The main page can view, add, edit, and delete all items and locations. The mobile front-end includes support for user accounts. Locations are shared across all accounts, but items can only be added, viewed, edited, or deleted when associated with a specific account.  
 
-The mobile front-end uses a RESTful API created with the Endpoints Proto Datastore API. The mobile front-end uses the API to interact with the non-relational database.  
+The mobile front-end uses a RESTful API created with the Endpoints Proto Datastore API. The mobile front-end uses the API to interact with the non-relational database  
 
