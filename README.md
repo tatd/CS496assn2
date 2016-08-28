@@ -1,4 +1,4 @@
-#CS496  
+#Media Library  
 
 ##Dennis Tat  
 
